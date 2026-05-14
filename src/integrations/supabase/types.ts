@@ -14,16 +14,124 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_settings: {
+        Row: {
+          contact_email: string
+          event_date: string
+          event_name: string
+          event_tagline: string
+          event_time: string
+          id: number
+          organizer: string
+          seat_cap: number
+          venue: string
+        }
+        Insert: {
+          contact_email?: string
+          event_date?: string
+          event_name?: string
+          event_tagline?: string
+          event_time?: string
+          id?: number
+          organizer?: string
+          seat_cap?: number
+          venue?: string
+        }
+        Update: {
+          contact_email?: string
+          event_date?: string
+          event_name?: string
+          event_tagline?: string
+          event_time?: string
+          id?: number
+          organizer?: string
+          seat_cap?: number
+          venue?: string
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          attended_at: string | null
+          company: string
+          designation: string
+          email: string
+          full_name: string
+          id: string
+          investor_type: string
+          linkedin_url: string | null
+          phone: string
+          registered_at: string
+          status: Database["public"]["Enums"]["registration_status"]
+          ticket_code: string
+        }
+        Insert: {
+          attended_at?: string | null
+          company: string
+          designation: string
+          email: string
+          full_name: string
+          id?: string
+          investor_type: string
+          linkedin_url?: string | null
+          phone: string
+          registered_at?: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          ticket_code?: string
+        }
+        Update: {
+          attended_at?: string | null
+          company?: string
+          designation?: string
+          email?: string
+          full_name?: string
+          id?: string
+          investor_type?: string
+          linkedin_url?: string | null
+          phone?: string
+          registered_at?: string
+          status?: Database["public"]["Enums"]["registration_status"]
+          ticket_code?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
+      registration_status: "registered" | "attended"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +258,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+      registration_status: ["registered", "attended"],
+    },
   },
 } as const
