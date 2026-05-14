@@ -6,9 +6,10 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check } from "lucide-react";
+import { Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check, Cpu, Server, MonitorSmartphone, Container } from "lucide-react";
 
 import { getEventInfo, registerAttendee } from "@/lib/event.functions";
+import sixstoneLogo from "@/assets/sixstone-logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,11 +77,8 @@ function LandingPage() {
     <div className="min-h-screen">
       {/* Nav */}
       <nav className="absolute inset-x-0 top-0 z-20 px-6 md:px-12 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-sm bg-gold flex items-center justify-center">
-            <span className="font-display text-navy-deep font-bold text-lg leading-none">A</span>
-          </div>
-          <span className="font-display text-xl tracking-wide">{settings.organizer}</span>
+        <div className="flex items-center gap-3">
+          <img src={sixstoneLogo} alt={settings.organizer} className="h-9 md:h-10 w-auto bg-white/95 rounded-sm px-2 py-1" />
         </div>
         <a href="#register" className="text-sm text-muted-foreground hover:text-gold transition">
           Reserve seat →
