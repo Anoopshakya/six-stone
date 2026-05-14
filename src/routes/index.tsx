@@ -6,9 +6,10 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check } from "lucide-react";
+import { Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check, Cpu, Server, MonitorSmartphone, Container } from "lucide-react";
 
 import { getEventInfo, registerAttendee } from "@/lib/event.functions";
+import sixstoneLogo from "@/assets/sixstone-logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,11 +77,8 @@ function LandingPage() {
     <div className="min-h-screen">
       {/* Nav */}
       <nav className="absolute inset-x-0 top-0 z-20 px-6 md:px-12 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-sm bg-gold flex items-center justify-center">
-            <span className="font-display text-navy-deep font-bold text-lg leading-none">A</span>
-          </div>
-          <span className="font-display text-xl tracking-wide">{settings.organizer}</span>
+        <div className="flex items-center gap-3">
+          <img src={sixstoneLogo} alt={settings.organizer} className="h-9 md:h-10 w-auto bg-white/95 rounded-sm px-2 py-1" />
         </div>
         <a href="#register" className="text-sm text-muted-foreground hover:text-gold transition">
           Reserve seat →
@@ -116,18 +114,43 @@ function LandingPage() {
         </div>
       </header>
 
-      {/* Why attend */}
+      {/* Showcasing Sectors */}
       <section className="bg-navy py-24 px-6 md:px-12">
         <div className="max-w-6xl mx-auto">
-          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">The Evening</p>
+          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Showcasing Sectors</p>
+          <h2 className="font-display text-4xl md:text-5xl mb-16 max-w-3xl">
+            The industries shaping India's next decade of capital.
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-8">
+            {[
+              { icon: Cpu, title: "Semiconductor & Chip Designing" },
+              { icon: Server, title: "Data Center Infrastructure" },
+              { icon: MonitorSmartphone, title: "Electronics Manufacturing Services" },
+              { icon: Container, title: "Container Manufacturing" },
+            ].map(({ icon: Icon, title }) => (
+              <div key={title} className="flex items-center gap-5 p-6 border border-border rounded-md bg-card hover:border-gold/40 transition">
+                <div className="h-12 w-12 rounded-sm bg-gold/10 flex items-center justify-center shrink-0">
+                  <Icon className="h-6 w-6 text-gold" />
+                </div>
+                <h3 className="font-display text-xl md:text-2xl">{title}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why attend */}
+      <section className="bg-navy-deep py-24 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">The Day</p>
           <h2 className="font-display text-4xl md:text-5xl mb-16 max-w-3xl">
             A curated room of decision-makers — not a conference.
           </h2>
           <div className="grid md:grid-cols-3 gap-12">
             {[
               { icon: ShieldCheck, title: "Vetted attendees", body: "Every invitee is reviewed personally. No exhibitors, no badges, no lanyards." },
-              { icon: Users, title: "Capital in the room", body: "Family offices, late-stage VCs, growth PE, and selective angels — together for one evening." },
-              { icon: Sparkles, title: "Off the record", body: "Chatham House rules. Conversations stay in the ballroom; relationships continue elsewhere." },
+              { icon: Users, title: "Capital in the room", body: "Family offices, late-stage VCs, growth PE, and selective angels — together in one room." },
+              { icon: Sparkles, title: "Off the record", body: "Chatham House rules. Conversations stay in the room; relationships continue elsewhere." },
             ].map(({ icon: Icon, title, body }) => (
               <div key={title}>
                 <Icon className="h-6 w-6 text-gold mb-5" />
@@ -143,13 +166,14 @@ function LandingPage() {
       <section className="bg-navy-deep py-24 px-6 md:px-12">
         <div className="max-w-4xl mx-auto">
           <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Programme</p>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">The arc of the evening</h2>
+          <h2 className="font-display text-4xl md:text-5xl mb-12">The arc of the day</h2>
           <div className="space-y-0">
             {[
-              ["18:00", "Arrival & private reception", "Champagne, oysters, first conversations."],
-              ["19:30", "Opening keynote", "A guest principal on the year ahead in private capital."],
-              ["20:15", "Curated dinner", "Pre-assigned tables — every seat chosen to spark a deal."],
-              ["22:00", "Cigars & cognac", "On the terrace. The unofficial part — and where the real work happens."],
+              ["10:00", "Registration & welcome coffee", "Arrival at Hotel Trident, BKC. First introductions over coffee."],
+              ["11:00", "Opening keynote", "Sixstone Capital on the macro tailwinds shaping India's industrial decade."],
+              ["12:30", "Sector showcases", "Founders presenting across semiconductors, data centers, EMS, and container manufacturing."],
+              ["14:00", "Curated lunch & 1:1s", "Pre-assigned tables — every seat chosen to spark a deal."],
+              ["16:00", "Closing roundtable & high tea", "Off-the-record discussion with anchor investors and sector leads."],
             ].map(([time, title, desc], i) => (
               <div key={i} className="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] gap-6 py-6 border-t border-border first:border-t-0">
                 <div className="font-display text-2xl text-gold">{time}</div>
