@@ -1,0 +1,1 @@
+UPDATE public.event_settings SET event_name='Tailwinds 2026', event_tagline='Where Capital Meets Opportunity — an invitation to the exclusive investor conference.', event_date='3rd June 2026', event_time='10:00 AM Onwards', venue='Hotel Trident, BKC, Mumbai', organizer='Sixstone Capital', contact_email='rsvp@sixstonecapital.com' WHERE id=1;
