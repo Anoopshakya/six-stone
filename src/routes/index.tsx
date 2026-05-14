@@ -166,13 +166,14 @@ function LandingPage() {
       <section className="bg-navy-deep py-24 px-6 md:px-12">
         <div className="max-w-4xl mx-auto">
           <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Programme</p>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">The arc of the evening</h2>
+          <h2 className="font-display text-4xl md:text-5xl mb-12">The arc of the day</h2>
           <div className="space-y-0">
             {[
-              ["18:00", "Arrival & private reception", "Champagne, oysters, first conversations."],
-              ["19:30", "Opening keynote", "A guest principal on the year ahead in private capital."],
-              ["20:15", "Curated dinner", "Pre-assigned tables — every seat chosen to spark a deal."],
-              ["22:00", "Cigars & cognac", "On the terrace. The unofficial part — and where the real work happens."],
+              ["10:00", "Registration & welcome coffee", "Arrival at Hotel Trident, BKC. First introductions over coffee."],
+              ["11:00", "Opening keynote", "Sixstone Capital on the macro tailwinds shaping India's industrial decade."],
+              ["12:30", "Sector showcases", "Founders presenting across semiconductors, data centers, EMS, and container manufacturing."],
+              ["14:00", "Curated lunch & 1:1s", "Pre-assigned tables — every seat chosen to spark a deal."],
+              ["16:00", "Closing roundtable & high tea", "Off-the-record discussion with anchor investors and sector leads."],
             ].map(([time, title, desc], i) => (
               <div key={i} className="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] gap-6 py-6 border-t border-border first:border-t-0">
                 <div className="font-display text-2xl text-gold">{time}</div>
