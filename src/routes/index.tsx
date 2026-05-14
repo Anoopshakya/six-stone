@@ -114,18 +114,43 @@ function LandingPage() {
         </div>
       </header>
 
-      {/* Why attend */}
+      {/* Showcasing Sectors */}
       <section className="bg-navy py-24 px-6 md:px-12">
         <div className="max-w-6xl mx-auto">
-          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">The Evening</p>
+          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Showcasing Sectors</p>
+          <h2 className="font-display text-4xl md:text-5xl mb-16 max-w-3xl">
+            The industries shaping India's next decade of capital.
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-8">
+            {[
+              { icon: Cpu, title: "Semiconductor & Chip Designing" },
+              { icon: Server, title: "Data Center Infrastructure" },
+              { icon: MonitorSmartphone, title: "Electronics Manufacturing Services" },
+              { icon: Container, title: "Container Manufacturing" },
+            ].map(({ icon: Icon, title }) => (
+              <div key={title} className="flex items-center gap-5 p-6 border border-border rounded-md bg-card hover:border-gold/40 transition">
+                <div className="h-12 w-12 rounded-sm bg-gold/10 flex items-center justify-center shrink-0">
+                  <Icon className="h-6 w-6 text-gold" />
+                </div>
+                <h3 className="font-display text-xl md:text-2xl">{title}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why attend */}
+      <section className="bg-navy-deep py-24 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">The Day</p>
           <h2 className="font-display text-4xl md:text-5xl mb-16 max-w-3xl">
             A curated room of decision-makers — not a conference.
           </h2>
           <div className="grid md:grid-cols-3 gap-12">
             {[
               { icon: ShieldCheck, title: "Vetted attendees", body: "Every invitee is reviewed personally. No exhibitors, no badges, no lanyards." },
-              { icon: Users, title: "Capital in the room", body: "Family offices, late-stage VCs, growth PE, and selective angels — together for one evening." },
-              { icon: Sparkles, title: "Off the record", body: "Chatham House rules. Conversations stay in the ballroom; relationships continue elsewhere." },
+              { icon: Users, title: "Capital in the room", body: "Family offices, late-stage VCs, growth PE, and selective angels — together in one room." },
+              { icon: Sparkles, title: "Off the record", body: "Chatham House rules. Conversations stay in the room; relationships continue elsewhere." },
             ].map(({ icon: Icon, title, body }) => (
               <div key={title}>
                 <Icon className="h-6 w-6 text-gold mb-5" />
