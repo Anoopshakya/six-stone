@@ -28,17 +28,17 @@ function Dashboard() {
     if (!q.trim()) return rows;
     const s = q.toLowerCase();
     return rows.filter((r) =>
-      [r.full_name, r.email, r.company, r.designation, r.investor_type]
+      [r.full_name, r.email, r.company, r.designation]
         .join(" ").toLowerCase().includes(s),
     );
   }, [listQ.data, q]);
 
   function exportCsv() {
     const rows = filtered;
-    const headers = ["Name","Email","Phone","Company","Designation","Investor Type","Status","Registered","Attended"];
+    const headers = ["Name","Email","Phone","Company","Designation","Attendees","Status","Registered","Attended"];
     const csv = [headers.join(",")]
       .concat(rows.map(r => [
-        r.full_name, r.email, r.phone, r.company, r.designation, r.investor_type,
+        r.full_name, r.email, r.phone, r.company, r.designation, r.attendees_count,
         r.status, r.registered_at, r.attended_at ?? "",
       ].map(v => `"${String(v ?? "").replace(/"/g,'""')}"`).join(",")))
       .join("\n");
@@ -85,7 +85,7 @@ function Dashboard() {
             <tr>
               <th className="text-left px-4 py-3">Name</th>
               <th className="text-left px-4 py-3">Firm · Role</th>
-              <th className="text-left px-4 py-3 hidden md:table-cell">Type</th>
+              <th className="text-left px-4 py-3 hidden md:table-cell">Attendees</th>
               <th className="text-left px-4 py-3 hidden lg:table-cell">Email</th>
               <th className="text-left px-4 py-3">Status</th>
             </tr>
@@ -101,7 +101,7 @@ function Dashboard() {
                   <div>{r.company}</div>
                   <div className="text-xs text-muted-foreground">{r.designation}</div>
                 </td>
-                <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">{r.investor_type}</td>
+                <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">{r.attendees_count}</td>
                 <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground">{r.email}</td>
                 <td className="px-4 py-3">
                   {r.status === "attended" ? (
