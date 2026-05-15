@@ -53,12 +53,13 @@ export type Database = {
       registrations: {
         Row: {
           attended_at: string | null
+          attendees_count: number
           company: string
           designation: string
           email: string
           full_name: string
           id: string
-          investor_type: string
+          investor_type: string | null
           linkedin_url: string | null
           phone: string
           registered_at: string
@@ -67,12 +68,13 @@ export type Database = {
         }
         Insert: {
           attended_at?: string | null
+          attendees_count?: number
           company: string
           designation: string
           email: string
           full_name: string
           id?: string
-          investor_type: string
+          investor_type?: string | null
           linkedin_url?: string | null
           phone: string
           registered_at?: string
@@ -81,12 +83,13 @@ export type Database = {
         }
         Update: {
           attended_at?: string | null
+          attendees_count?: number
           company?: string
           designation?: string
           email?: string
           full_name?: string
           id?: string
-          investor_type?: string
+          investor_type?: string | null
           linkedin_url?: string | null
           phone?: string
           registered_at?: string
