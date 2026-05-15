@@ -10,7 +10,7 @@ const registerSchema = z.object({
   phone: z.string().trim().min(6).max(30),
   company: z.string().trim().min(1).max(200),
   designation: z.string().trim().min(1).max(150),
-  investor_type: z.enum(["Angel", "VC", "PE", "Family Office", "Other"]),
+  attendees_count: z.coerce.number().int().min(1).max(10),
   linkedin_url: z
     .string()
     .trim()
@@ -76,7 +76,7 @@ export const registerAttendee = createServerFn({ method: "POST" })
         phone: data.phone,
         company: data.company,
         designation: data.designation,
-        investor_type: data.investor_type,
+        attendees_count: data.attendees_count,
         linkedin_url: data.linkedin_url ?? null,
       })
       .select("ticket_code, full_name, email")

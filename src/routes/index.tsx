@@ -6,16 +6,18 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check, Cpu, Server, MonitorSmartphone, Container } from "lucide-react";
+import {
+  Calendar, MapPin, Users, ShieldCheck, Sparkles, ArrowRight, Check,
+  Cpu, Server, MonitorSmartphone, Container, Coffee, Mic, Presentation, Utensils, Wine, Minus, Plus,
+} from "lucide-react";
 
 import { getEventInfo, registerAttendee } from "@/lib/event.functions";
 import sixstoneLogo from "@/assets/sixstone-logo.png";
+import heroBg from "@/assets/hero-bg.jpg";
+import sectorsBg from "@/assets/sectors-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -28,7 +30,7 @@ const schema = z.object({
   phone: z.string().trim().min(6, "Phone is required").max(30),
   company: z.string().trim().min(1, "Required").max(200),
   designation: z.string().trim().min(1, "Required").max(150),
-  investor_type: z.enum(["Angel", "VC", "PE", "Family Office", "Other"]),
+  attendees_count: z.coerce.number().int().min(1, "Min 1").max(10, "Max 10"),
   linkedin_url: z.string().trim().url().max(300).optional().or(z.literal("")),
 });
 type FormValues = z.infer<typeof schema>;
@@ -50,8 +52,12 @@ function LandingPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { investor_type: "VC" } as Partial<FormValues> as FormValues,
+    defaultValues: { attendees_count: 1 } as Partial<FormValues> as FormValues,
   });
+
+  const attendees = form.watch("attendees_count") ?? 1;
+  const setAttendees = (n: number) =>
+    form.setValue("attendees_count", Math.min(10, Math.max(1, n)), { shouldValidate: true });
 
   async function onSubmit(values: FormValues) {
     try {
@@ -76,7 +82,7 @@ function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Nav */}
-      <nav className="absolute inset-x-0 top-0 z-20 px-6 md:px-12 py-6 flex items-center justify-between">
+      <nav className="absolute inset-x-0 top-0 z-30 px-6 md:px-12 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src={sixstoneLogo} alt={settings.organizer} className="h-9 md:h-10 w-auto bg-white/95 rounded-sm px-2 py-1" />
         </div>
@@ -86,16 +92,27 @@ function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <header className="relative overflow-hidden bg-navy-deep">
-        <div className="absolute inset-0 gradient-radial-gold opacity-70" />
-        <div className="absolute inset-0 [background-image:radial-gradient(ellipse_at_bottom_right,color-mix(in_oklab,var(--gold)_8%,transparent),transparent_55%)]" />
-        <div className="relative max-w-6xl mx-auto px-6 md:px-12 pt-36 pb-28 md:pt-44 md:pb-36">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold/40 bg-gold/5 text-gold text-xs uppercase tracking-[0.18em] mb-8">
+      <header className="relative overflow-hidden bg-navy-deep min-h-[92vh] flex items-center">
+        <img
+          src={heroBg}
+          alt=""
+          aria-hidden
+          width={1920}
+          height={1080}
+          className="absolute inset-0 h-full w-full object-cover opacity-55"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/85 via-navy-deep/60 to-navy-deep" />
+        <div className="absolute inset-0 gradient-radial-gold opacity-60" />
+        <div className="absolute inset-0 [background-image:radial-gradient(ellipse_at_bottom_right,color-mix(in_oklab,var(--gold)_10%,transparent),transparent_55%)]" />
+
+        <div className="relative max-w-6xl mx-auto px-6 md:px-12 pt-36 pb-28 md:pt-44 md:pb-36 w-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold/40 bg-gold/5 backdrop-blur text-gold text-xs uppercase tracking-[0.18em] mb-8">
             <Sparkles className="h-3 w-3" /> Invitation only · {seatsLeft} of {settings.seat_cap} seats remaining
           </div>
-          <h1 className="font-display text-5xl md:text-7xl leading-[1.05] max-w-4xl">
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.02] max-w-4xl">
             {settings.event_name}
           </h1>
+          <div className="mt-4 h-[2px] w-24 bg-gradient-to-r from-gold to-transparent" />
           <p className="mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
             {settings.event_tagline}
           </p>
@@ -104,42 +121,51 @@ function LandingPage() {
             <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-gold" /> {settings.venue}</span>
             <span className="flex items-center gap-2"><Users className="h-4 w-4 text-gold" /> Limited to {settings.seat_cap} attendees</span>
           </div>
-          <div className="mt-12">
-            <Button asChild size="lg" className="bg-gold text-navy-deep hover:bg-gold-soft font-medium">
+          <div className="mt-12 flex flex-wrap gap-4">
+            <Button asChild size="lg" className="bg-gold text-navy-deep hover:bg-gold-soft font-medium shadow-[0_10px_40px_-12px_color-mix(in_oklab,var(--gold)_55%,transparent)]">
               <a href="#register">
                 Register your interest <ArrowRight className="ml-2 h-4 w-4" />
               </a>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="border-gold/30 text-foreground hover:bg-gold/10 hover:text-gold">
+              <a href="#programme">View programme</a>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Showcasing Sectors */}
-      <section className="bg-navy py-24 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative bg-navy py-24 px-6 md:px-12 overflow-hidden">
+        <img src={sectorsBg} alt="" aria-hidden width={1920} height={1080} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-[0.06]" />
+        <div className="relative max-w-6xl mx-auto">
           <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Showcasing Sectors</p>
           <h2 className="font-display text-4xl md:text-5xl mb-16 max-w-3xl">
             The industries shaping India's next decade of capital.
           </h2>
-          <div className="grid sm:grid-cols-2 gap-8">
+          <div className="grid sm:grid-cols-2 gap-6">
             {[
-              { icon: Cpu, title: "Semiconductor & Chip Designing" },
-              { icon: Server, title: "Data Center Infrastructure" },
-              { icon: MonitorSmartphone, title: "Electronics Manufacturing Services" },
-              { icon: Container, title: "Container Manufacturing" },
-            ].map(({ icon: Icon, title }) => (
-              <div key={title} className="flex items-center gap-5 p-6 border border-border rounded-md bg-card hover:border-gold/40 transition">
-                <div className="h-12 w-12 rounded-sm bg-gold/10 flex items-center justify-center shrink-0">
-                  <Icon className="h-6 w-6 text-gold" />
+              { icon: Cpu, title: "Semiconductor & Chip Designing", body: "Sovereign silicon — fabless design, packaging, and the talent stack." },
+              { icon: Server, title: "Data Center Infrastructure", body: "Hyperscale build-out, power, and the AI compute boom." },
+              { icon: MonitorSmartphone, title: "Electronics Manufacturing", body: "PLI-fueled EMS contract manufacturing for the world." },
+              { icon: Container, title: "Container Manufacturing", body: "Reshoring the supply chain for India's export decade." },
+            ].map(({ icon: Icon, title, body }) => (
+              <div key={title} className="group relative p-7 border border-border rounded-md bg-card/80 backdrop-blur hover:border-gold/50 transition-all hover:translate-y-[-2px] hover:shadow-[0_20px_60px_-30px_color-mix(in_oklab,var(--gold)_60%,transparent)]">
+                <div className="flex items-start gap-5">
+                  <div className="h-12 w-12 rounded-sm bg-gold/10 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition">
+                    <Icon className="h-6 w-6 text-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl mb-1">{title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
+                  </div>
                 </div>
-                <h3 className="font-display text-xl md:text-2xl">{title}</h3>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why attend */}
+      {/* The Day */}
       <section className="bg-navy-deep py-24 px-6 md:px-12">
         <div className="max-w-6xl mx-auto">
           <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">The Day</p>
@@ -162,34 +188,57 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Agenda */}
-      <section className="bg-navy-deep py-24 px-6 md:px-12">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Programme</p>
-          <h2 className="font-display text-4xl md:text-5xl mb-12">The arc of the day</h2>
-          <div className="space-y-0">
-            {[
-              ["10:00", "Registration & welcome coffee", "Arrival at Hotel Trident, BKC. First introductions over coffee."],
-              ["11:00", "Opening keynote", "Sixstone Capital on the macro tailwinds shaping India's industrial decade."],
-              ["12:30", "Sector showcases", "Founders presenting across semiconductors, data centers, EMS, and container manufacturing."],
-              ["14:00", "Curated lunch & 1:1s", "Pre-assigned tables — every seat chosen to spark a deal."],
-              ["16:00", "Closing roundtable & high tea", "Off-the-record discussion with anchor investors and sector leads."],
-            ].map(([time, title, desc], i) => (
-              <div key={i} className="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] gap-6 py-6 border-t border-border first:border-t-0">
-                <div className="font-display text-2xl text-gold">{time}</div>
-                <div>
-                  <h3 className="text-lg font-medium">{title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{desc}</p>
-                </div>
-              </div>
-            ))}
+      {/* Programme */}
+      <section id="programme" className="relative bg-navy py-24 px-6 md:px-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-end justify-between flex-wrap gap-6 mb-16">
+            <div>
+              <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3">Programme</p>
+              <h2 className="font-display text-4xl md:text-5xl">The arc of the day</h2>
+            </div>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              {settings.event_date} · Five chapters, one room, end-to-end curation.
+            </p>
           </div>
+
+          <ol className="relative">
+            <span aria-hidden className="hidden md:block absolute left-[148px] top-2 bottom-2 w-px bg-gradient-to-b from-gold/0 via-gold/30 to-gold/0" />
+            {[
+              { time: "10:00", icon: Coffee, title: "Registration & welcome coffee", desc: "Arrival at Hotel Trident, BKC. First introductions over coffee.", tag: "Arrival" },
+              { time: "11:00", icon: Mic, title: "Opening keynote", desc: "Sixstone Capital on the macro tailwinds shaping India's industrial decade.", tag: "Keynote" },
+              { time: "12:30", icon: Presentation, title: "Sector showcases", desc: "Founders presenting across semiconductors, data centers, EMS, and container manufacturing.", tag: "Showcases" },
+              { time: "14:00", icon: Utensils, title: "Curated lunch & 1:1s", desc: "Pre-assigned tables — every seat chosen to spark a deal.", tag: "Networking" },
+              { time: "16:00", icon: Wine, title: "Closing roundtable & high tea", desc: "Off-the-record discussion with anchor investors and sector leads.", tag: "Closing" },
+            ].map(({ time, icon: Icon, title, desc, tag }, i) => (
+              <li key={i} className="relative grid md:grid-cols-[120px_56px_1fr] gap-5 md:gap-6 pb-10 last:pb-0">
+                <div className="md:text-right">
+                  <div className="font-display text-3xl md:text-4xl text-gold leading-none">{time}</div>
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-2">{tag}</div>
+                </div>
+                <div className="hidden md:flex justify-center">
+                  <div className="relative h-14 w-14 rounded-full border border-gold/40 bg-navy-deep flex items-center justify-center shadow-[0_0_0_6px_color-mix(in_oklab,var(--navy)_100%,transparent)]">
+                    <Icon className="h-5 w-5 text-gold" />
+                  </div>
+                </div>
+                <div className="bg-card/70 border border-border hover:border-gold/40 rounded-md p-6 backdrop-blur-sm transition-all hover:translate-x-1">
+                  <div className="md:hidden flex items-center gap-3 mb-3">
+                    <div className="h-9 w-9 rounded-full bg-gold/10 flex items-center justify-center">
+                      <Icon className="h-4 w-4 text-gold" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg md:text-xl font-medium">{title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       {/* Register */}
-      <section id="register" className="bg-navy py-24 px-6 md:px-12">
-        <div className="max-w-2xl mx-auto">
+      <section id="register" className="relative bg-navy-deep py-24 px-6 md:px-12 overflow-hidden">
+        <div className="absolute inset-0 gradient-radial-gold opacity-30" />
+        <div className="relative max-w-2xl mx-auto">
           <p className="text-gold text-xs uppercase tracking-[0.22em] mb-3 text-center">Reserve a seat</p>
           <h2 className="font-display text-4xl md:text-5xl mb-3 text-center">
             {success ? "You're confirmed." : "Request your invitation"}
@@ -220,7 +269,7 @@ function LandingPage() {
           ) : (
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-5 p-8 md:p-10 border border-border rounded-md bg-card"
+              className="space-y-5 p-8 md:p-10 border border-border rounded-md bg-card/90 backdrop-blur shadow-[0_30px_80px_-40px_rgba(0,0,0,0.7)]"
             >
               <Field label="Full name" error={form.formState.errors.full_name?.message}>
                 <Input {...form.register("full_name")} placeholder="Aanya Mehra" />
@@ -242,18 +291,22 @@ function LandingPage() {
                 </Field>
               </div>
               <div className="grid md:grid-cols-2 gap-5">
-                <Field label="Investor type">
-                  <Select
-                    defaultValue="VC"
-                    onValueChange={(v) => form.setValue("investor_type", v as FormValues["investor_type"])}
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {["Angel", "VC", "PE", "Family Office", "Other"].map(o => (
-                        <SelectItem key={o} value={o}>{o}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Field label="No. of attendees" error={form.formState.errors.attendees_count?.message}>
+                  <div className="flex items-center border border-input bg-input/30 rounded-md overflow-hidden">
+                    <button type="button" onClick={() => setAttendees(attendees - 1)} aria-label="Decrease" className="px-3 h-10 text-muted-foreground hover:text-gold transition disabled:opacity-30" disabled={attendees <= 1}>
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      {...form.register("attendees_count", { valueAsNumber: true })}
+                      className="w-full text-center bg-transparent h-10 outline-none font-medium tabular-nums"
+                    />
+                    <button type="button" onClick={() => setAttendees(attendees + 1)} aria-label="Increase" className="px-3 h-10 text-muted-foreground hover:text-gold transition disabled:opacity-30" disabled={attendees >= 10}>
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
                 </Field>
                 <Field label="LinkedIn (optional)" error={form.formState.errors.linkedin_url?.message}>
                   <Input {...form.register("linkedin_url")} placeholder="https://linkedin.com/in/…" />
