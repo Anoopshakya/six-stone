@@ -1,7 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { Search, Download, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,28 +8,60 @@ import { listRegistrations, getAdminStats, claimAdminIfNone } from "@/lib/event.
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
 
 function Dashboard() {
-  const list = useServerFn(listRegistrations);
-  const stats = useServerFn(getAdminStats);
+  // replaced server functions with REST endpoints
+  async function list() {
+    const token = await (await import('@/integrations/supabase/client')).supabase.auth.getSession().then(r => r.data.session?.access_token);
+    const res = await fetch('/api/admin/list', { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    if (!res.ok) throw new Error('Failed to load list');
+    return (await res.json()).rows;
+  }
+  async function stats() {
+    const token = await (await import('@/integrations/supabase/client')).supabase.auth.getSession().then(r => r.data.session?.access_token);
+    const res = await fetch('/api/admin/stats', { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    if (!res.ok) throw new Error('Failed to load stats');
+    return await res.json();
+  }
   const [q, setQ] = useState("");
+  const [statsData, setStatsData] = useState<any | null>(null);
+  const [listData, setListData] = useState<any[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const statsQ = useQuery({
-    queryKey: ["admin-stats"],
-    queryFn: async () => {
-      try { await claimAdminIfNone(); } catch {}
-      return stats();
-    },
-  });
-  const listQ = useQuery({ queryKey: ["admin-list"], queryFn: () => list() });
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // attempt claim (no-op if already claimed)
+      try {
+        const session = await (await import('@/integrations/supabase/client')).supabase.auth.getSession();
+        const token = session.data.session?.access_token;
+        await fetch('/api/admin/claim', { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      } catch {}
+
+      const s = await stats();
+      setStatsData(s);
+      const rows = await list();
+      setListData(rows);
+    } catch (e: any) {
+      setError(e?.message ?? 'Failed to load admin data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const filtered = useMemo(() => {
-    const rows = listQ.data?.rows ?? [];
+    const rows = listData ?? [];
     if (!q.trim()) return rows;
     const s = q.toLowerCase();
     return rows.filter((r) =>
       [r.full_name, r.email, r.company, r.designation]
         .join(" ").toLowerCase().includes(s),
     );
-  }, [listQ.data, q]);
+  }, [listData, q]);
 
   function exportCsv() {
     const rows = filtered;
@@ -49,12 +79,12 @@ function Dashboard() {
     URL.revokeObjectURL(url);
   }
 
-  if (listQ.error) {
+  if (error) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-12 text-center">
         <h2 className="font-display text-2xl mb-2">Access denied</h2>
-        <p className="text-muted-foreground mb-4">Your account isn't an admin yet. The first user to sign in becomes admin automatically.</p>
-        <Button onClick={() => listQ.refetch()}>Retry</Button>
+        <p className="text-muted-foreground mb-4">{error}</p>
+        <Button onClick={() => loadData()}>Retry</Button>
       </div>
     );
   }
@@ -62,10 +92,10 @@ function Dashboard() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <Stat label="Registered" value={statsQ.data?.total ?? "—"} />
-        <Stat label="Attended" value={statsQ.data?.attended ?? "—"} accent />
-        <Stat label="Seats left" value={statsQ.data?.seatsLeft ?? "—"} />
-        <Stat label="Capacity" value={statsQ.data?.cap ?? "—"} />
+        <Stat label="Registered" value={statsData?.total ?? "—"} />
+        <Stat label="Attended" value={statsData?.attended ?? "—"} accent />
+        <Stat label="Seats left" value={statsData?.seatsLeft ?? "—"} />
+        <Stat label="Capacity" value={statsData?.cap ?? "—"} />
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-5">
@@ -114,7 +144,7 @@ function Dashboard() {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && !listQ.isLoading ? (
+            {filtered.length === 0 && !loading ? (
               <tr><td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">No registrants yet.</td></tr>
             ) : null}
           </tbody>

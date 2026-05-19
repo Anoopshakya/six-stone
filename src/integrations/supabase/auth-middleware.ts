@@ -64,20 +64,24 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    const { data, error } = await supabase.auth.getClaims(token);
-    if (error || !data?.claims) {
+    // Resolve user from the provided bearer token. `getUser()` reads the
+    // Authorization header we attached to the client above and returns the
+    // corresponding user. `getClaims` is not part of supabase-js, so use
+    // `getUser()` and expose `userId` and `claims` (user object) on context.
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data?.user) {
       throw new Error('Unauthorized: Invalid token');
     }
 
-    if (!data.claims.sub) {
+    if (!data.user.id) {
       throw new Error('Unauthorized: No user ID found in token');
     }
 
     return next({
       context: {
         supabase,
-        userId: data.claims.sub,
-        claims: data.claims,
+        userId: data.user.id,
+        claims: data.user,
       },
     });
   },
